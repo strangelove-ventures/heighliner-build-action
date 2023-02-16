@@ -1,0 +1,52 @@
+name: Build and push Docker images with heighliner
+description: Build and push Docker images with heighliner
+author: bigs
+
+inputs:
+  github-token:
+    description: "GitHub Token used to authenticate against a repository for Git context"
+    default: ${{ github.token }}
+    required: false
+
+  heighliner-owner:
+    description: "GitHub owner name of the heighliner repo to use"
+    default: strangelove-ventures
+    required: false
+
+  heighliner-repo:
+    description: "GitHub repo name of the heighliner repo to use"
+    default: heighliner
+    required: false
+
+  heighliner-tag:
+    description: "Name of the heighliner tag to use from GitHub (defaults to latest)"
+    required: false
+
+  chain:
+    description: "Name of the chain (per chains.yaml) to build"
+    required: true
+
+  chains-spec-file:
+    description: "Local path to chains.yaml file"
+    required: false
+
+  local:
+    description: "Build image from local checked out repository (any non empty value is evaluated as true)"
+    default: "true"
+    required: false
+
+  tag:
+    description: "Resulting docker image tag (default derived from git ref)"
+    required: false
+
+  org:
+    description: "GitHub organization override for building from a fork"
+    required: false
+
+  registry:
+    description: "Docker container registry for pushing images"
+    required: false
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
