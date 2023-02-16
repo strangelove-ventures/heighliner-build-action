@@ -113,7 +113,35 @@ export function getChainSpecInputs(): ChainSpec | undefined {
   return;
 }
 
-export async function buildImage(opts: BuildOptions, spec?: ChainSpec) {
+interface ImageMetadata {
+  Id: string;
+  RepoDigests: string[];
+}
+
+async function getImageMetadata(
+  imageId: string
+): Promise<[ImageMetadata, string]> {
+  const inspectOutput = await exec.getExecOutput("docker", [
+    "inspect",
+    imageId,
+  ]);
+  const inspectJSON = inspectOutput.stdout;
+  const metadata = JSON.parse(inspectJSON) as ImageMetadata;
+
+  return [metadata, inspectJSON];
+}
+
+interface BuildOutput {
+  imageid: string;
+  digest?: string;
+  metadata: string;
+  tag: string;
+}
+
+export async function buildImage(
+  opts: BuildOptions,
+  spec?: ChainSpec
+): Promise<BuildOutput> {
   // If a custom chain config is provided, override chains.yaml
   if (spec !== undefined) {
     const specYAML = YAML.stringify([spec]);
@@ -125,5 +153,36 @@ export async function buildImage(opts: BuildOptions, spec?: ChainSpec) {
   }
 
   const args = buildOptionsToArguments(opts);
-  await heighliner(args);
+  const buildOutput = await heighliner(args);
+  const outputLines = buildOutput.stdout.split("\n");
+  const matches = outputLines.flatMap((line) => {
+    const match = line.match(/^Successfully (tagged|built) (\w+)$/);
+    if (match === null) {
+      return [];
+    }
+    return [match];
+  });
+  const imageIdMatch = matches.find((match) => match[1] === "built");
+  if (imageIdMatch === undefined) {
+    const err = new Error("Couldn't find imageid");
+    core.setFailed(err);
+    throw err;
+  }
+  const shortId = imageIdMatch[1];
+  const tagMatch = matches.find((match) => match[1] === "tagged");
+  if (tagMatch === undefined) {
+    const err = new Error("Couldn't find tag");
+    core.setFailed(err);
+    throw err;
+  }
+  const tag = tagMatch[1];
+
+  const [parsedMetadata, metadata] = await getImageMetadata(shortId);
+
+  return {
+    imageid: parsedMetadata.Id,
+    digest: parsedMetadata.RepoDigests[0],
+    metadata,
+    tag,
+  };
 }

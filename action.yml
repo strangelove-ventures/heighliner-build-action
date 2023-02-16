@@ -83,6 +83,19 @@ inputs:
     description: "Any extra libraries need to run the binary. In additon to the binary itself, these will be copied over to the final image. Providing this option will override the default chains.yaml with a custom chain spec."
     required: false
 
+outputs:
+  imageid:
+    description: "The docker image ID of the built image"
+
+  digest:
+    description: "The docker image digest of the built image"
+
+  metadata:
+    description: "The JSON metadata of the built image"
+
+  tag:
+    description: "The tag applied to the built image"
+
 runs:
   using: 'node16'
   main: 'dist/index.js'

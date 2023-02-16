@@ -17,7 +17,20 @@ async function run(): Promise<void> {
     tag,
   });
 
-  await buildImage(buildOpts, chainSpec);
+  const {
+    imageid,
+    metadata,
+    digest,
+    tag: outputTag,
+  } = await buildImage(buildOpts, chainSpec);
+
+  if (digest !== undefined) {
+    core.setOutput("digest", digest);
+  }
+
+  core.setOutput("imageid", imageid);
+  core.setOutput("metadata", metadata);
+  core.setOutput("tag", outputTag);
 }
 
 run();
