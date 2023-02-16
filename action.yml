@@ -47,6 +47,42 @@ inputs:
     description: "Docker container registry for pushing images"
     required: false
 
+  repo-host:
+    description: "Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  github-organization:
+    description: "The organization name of the location of the chain binary. By default, this is 'github.com', but use this field to override. For example 'gitlab.com'. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  github-repo:
+    description: "The repo name of the location of the chain binary. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  dockerfile:
+    description: "Which dockerfile strategy to use (folder names under dockerfile/). OPTIONS: cosmos, cargo, imported, or none. Use imported if you are importing an existing public docker image as a base for the heighliner image. Use none if you are not able to build the chain binary from source and need to download binaries into the image instead. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  build-env:
+    description: "Environment variables to be created during the build. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  pre-build:
+    description: "Any extra arguments needed to build the chain binary. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  build-target:
+    description: "The build command specific to the chosen dockerfile. For cosmos, likely make install. For cargo, likely build --release. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  binaries:
+    description: "The location of where the the build target places the binarie(s). Adding a ':' after the path allows for the ability to rename the binary. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  libraries:
+    description: "Any extra libraries need to run the binary. In additon to the binary itself, these will be copied over to the final image. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
 runs:
   using: 'node16'
   main: 'dist/index.js'
