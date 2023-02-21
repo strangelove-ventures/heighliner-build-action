@@ -1,4 +1,4 @@
-name: Build and push Docker images with heighliner
+name: Heighliner image build
 description: Build and push Docker images with heighliner
 author: bigs
 
