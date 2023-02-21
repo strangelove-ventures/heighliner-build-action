@@ -1,0 +1,101 @@
+name: Build and push Docker images with heighliner
+description: Build and push Docker images with heighliner
+author: bigs
+
+inputs:
+  github-token:
+    description: "GitHub Token used to authenticate against a repository for Git context"
+    default: ${{ github.token }}
+    required: false
+
+  heighliner-owner:
+    description: "GitHub owner name of the heighliner repo to use"
+    default: strangelove-ventures
+    required: false
+
+  heighliner-repo:
+    description: "GitHub repo name of the heighliner repo to use"
+    default: heighliner
+    required: false
+
+  heighliner-tag:
+    description: "Name of the heighliner tag to use from GitHub (defaults to latest)"
+    required: false
+
+  chain:
+    description: "Name of the chain (per chains.yaml) to build"
+    required: true
+
+  chains-spec-file:
+    description: "Local path to chains.yaml file"
+    required: false
+
+  local:
+    description: "Build image from local checked out repository (any non empty value is evaluated as true)"
+    default: "true"
+    required: false
+
+  tag:
+    description: "Resulting docker image tag (default derived from git ref)"
+    required: false
+
+  org:
+    description: "GitHub organization override for building from a fork"
+    required: false
+
+  registry:
+    description: "Docker container registry for pushing images"
+    required: false
+
+  repo-host:
+    description: "Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  github-organization:
+    description: "The organization name of the location of the chain binary. By default, this is 'github.com', but use this field to override. For example 'gitlab.com'. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  github-repo:
+    description: "The repo name of the location of the chain binary. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  dockerfile:
+    description: "Which dockerfile strategy to use (folder names under dockerfile/). OPTIONS: cosmos, cargo, imported, or none. Use imported if you are importing an existing public docker image as a base for the heighliner image. Use none if you are not able to build the chain binary from source and need to download binaries into the image instead. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  build-env:
+    description: "Environment variables to be created during the build. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  pre-build:
+    description: "Any extra arguments needed to build the chain binary. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  build-target:
+    description: "The build command specific to the chosen dockerfile. For cosmos, likely make install. For cargo, likely build --release. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  binaries:
+    description: "The location of where the the build target places the binarie(s). Adding a ':' after the path allows for the ability to rename the binary. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+  libraries:
+    description: "Any extra libraries need to run the binary. In additon to the binary itself, these will be copied over to the final image. Providing this option will override the default chains.yaml with a custom chain spec."
+    required: false
+
+outputs:
+  imageid:
+    description: "The docker image ID of the built image"
+
+  digest:
+    description: "The docker image digest of the built image"
+
+  metadata:
+    description: "The JSON metadata of the built image"
+
+  tag:
+    description: "The tag applied to the built image"
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
