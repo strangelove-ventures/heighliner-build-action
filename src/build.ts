@@ -156,7 +156,7 @@ export async function buildImage(
   const buildOutput = await heighliner(args);
   const outputLines = buildOutput.stdout.split("\n");
   const matches = outputLines.flatMap((line) => {
-    const match = line.match(/^Successfully (tagged|built) (\w+)$/);
+    const match = line.match(/^Successfully (tagged|built) (\S+)$/);
     if (match === null) {
       return [];
     }
