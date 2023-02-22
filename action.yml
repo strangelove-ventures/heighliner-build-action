@@ -47,6 +47,15 @@ inputs:
     description: "Docker container registry for pushing images"
     required: false
 
+  buildkit:
+    description: "User docker buildkit for building images"
+    required: false
+    default: "true"
+
+  platform:
+    description: "Comma separated list of platforms to build containers for"
+    required: false
+
   repo-host:
     description: "Providing this option will override the default chains.yaml with a custom chain spec."
     required: false

@@ -17,9 +17,10 @@ const buildKeysString = [
   "tag",
   "org",
   "registry",
+  "platform",
 ] as const;
 
-const buildKeysBoolean = ["local"] as const;
+const buildKeysBoolean = ["local", "buildkit"] as const;
 
 type BuildOptionsString = {
   [K in (typeof buildKeysString)[number]]?: string;
@@ -95,6 +96,14 @@ function buildOptionsToArguments(opts: BuildOptions): string[] {
     args = [...args, "--tag", opts.tag];
   }
 
+  if (opts.buildkit) {
+    args = [...args, "--buildkit"];
+  }
+
+  if (opts.platform !== undefined) {
+    args = [...args, "--platform", opts.platform];
+  }
+
   return args;
 }
 
@@ -132,7 +141,9 @@ async function getImageMetadata(
   const metadata = JSON.parse(inspectJSON) as ImageMetadata[];
 
   if (metadata.length < 1) {
-    throw new Error("Expected docker metadata to include at least one result, got none.");
+    throw new Error(
+      "Expected docker metadata to include at least one result, got none."
+    );
   }
 
   return [metadata[0], inspectJSON];
