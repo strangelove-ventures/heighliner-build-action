@@ -18,6 +18,7 @@ const buildKeysString = [
   "org",
   "registry",
   "platform",
+  "buildkit-address",
 ] as const;
 
 const buildKeysBoolean = ["local", "buildkit"] as const;
@@ -102,6 +103,10 @@ function buildOptionsToArguments(opts: BuildOptions): string[] {
 
   if (opts.platform !== undefined) {
     args = [...args, "--platform", opts.platform];
+  }
+
+  if (opts["buildkit-address"] !== undefined) {
+    args = [...args, "--buildkit-addr", opts["buildkit-address"]];
   }
 
   return args;

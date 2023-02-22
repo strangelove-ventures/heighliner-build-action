@@ -50,7 +50,11 @@ inputs:
   buildkit:
     description: "User docker buildkit for building images"
     required: false
-    default: "true"
+    default: "false"
+
+  buildkit-address:
+    description: "Address of the buildkit socket, can be unix, tcp, ssl (default \"unix:///run/buildkit/buildkitd.sock\")"
+    required: false
 
   platform:
     description: "Comma separated list of platforms to build containers for"
