@@ -97,7 +97,7 @@ function buildOptionsToArguments(opts: BuildOptions): string[] {
   }
 
   if (opts.buildkit) {
-    args = [...args, "--buildkit"];
+    args = [...args, "--use-buildkit"];
   }
 
   if (opts.platform !== undefined) {
