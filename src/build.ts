@@ -33,7 +33,10 @@ type BuildOptions = BuildOptionsString & BuildOptionsBoolean;
 
 export function getBuildOptions(): BuildOptions {
   const stringOptions = buildKeysString.reduce((opts, key) => {
-    opts[key] = core.getInput(key);
+    const input = core.getInput(key);
+    if (input !== "") {
+      opts[key] = core.getInput(key);
+    }
     return opts;
   }, {} as BuildOptionsString);
   const booleanOptions = buildKeysBoolean.reduce((opts, key) => {
