@@ -126,9 +126,13 @@ async function getImageMetadata(
     imageId,
   ]);
   const inspectJSON = inspectOutput.stdout;
-  const metadata = JSON.parse(inspectJSON) as ImageMetadata;
+  const metadata = JSON.parse(inspectJSON) as ImageMetadata[];
 
-  return [metadata, inspectJSON];
+  if (metadata.length < 1) {
+    throw new Error("Expected docker metadata to include at least one result, got none.");
+  }
+
+  return [metadata[0], inspectJSON];
 }
 
 interface BuildOutput {
