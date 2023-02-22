@@ -168,14 +168,14 @@ export async function buildImage(
     core.setFailed(err);
     throw err;
   }
-  const shortId = imageIdMatch[1];
+  const shortId = imageIdMatch[2];
   const tagMatch = matches.find((match) => match[1] === "tagged");
   if (tagMatch === undefined) {
     const err = new Error("Couldn't find tag");
     core.setFailed(err);
     throw err;
   }
-  const tag = tagMatch[1];
+  const tag = tagMatch[2];
 
   const [parsedMetadata, metadata] = await getImageMetadata(shortId);
 
