@@ -70,6 +70,21 @@ type ChainSpecInput = {
 
 type ChainSpec = ChainSpecInput & { name: string };
 
+type YAMLReadyChainSpec = Omit<ChainSpec, "build-env" | "binaries" | "libraries"> & {
+  "build-env": string[];
+  libraries: string[];
+  binaries: string[];
+};
+
+function prepareChainSpecForYAMLSerialization(spec: ChainSpec): YAMLReadyChainSpec {
+  return {
+    ...spec,
+    "build-env": spec["build-env"] && YAML.parse(spec["build-env"]),
+    libraries: spec.libraries && YAML.parse(spec.libraries),
+    binaries: spec.binaries && YAML.parse(spec.binaries),
+  };
+}
+
 function buildOptionsToArguments(opts: BuildOptions): string[] {
   let args = ["build"];
 
@@ -167,7 +182,8 @@ export async function buildImage(
 ): Promise<BuildOutput> {
   // If a custom chain config is provided, override chains.yaml
   if (spec !== undefined) {
-    const specYAML = YAML.stringify([spec]);
+    const preparedSpec = prepareChainSpecForYAMLSerialization(spec);
+    const specYAML = YAML.stringify([preparedSpec]);
     const mktempOutput = await exec.getExecOutput("mktemp", ["-d"]);
     const dir = mktempOutput.stdout.trim();
     const filepath = path.join(dir, "chains.yaml");
