@@ -70,13 +70,18 @@ type ChainSpecInput = {
 
 type ChainSpec = ChainSpecInput & { name: string };
 
-type YAMLReadyChainSpec = Omit<ChainSpec, "build-env" | "binaries" | "libraries"> & {
+type YAMLReadyChainSpec = Omit<
+  ChainSpec,
+  "build-env" | "binaries" | "libraries"
+> & {
   "build-env": string[];
   libraries: string[];
   binaries: string[];
 };
 
-function prepareChainSpecForYAMLSerialization(spec: ChainSpec): YAMLReadyChainSpec {
+function prepareChainSpecForYAMLSerialization(
+  spec: ChainSpec
+): YAMLReadyChainSpec {
   return {
     ...spec,
     "build-env": spec["build-env"] && YAML.parse(spec["build-env"]),
