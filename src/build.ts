@@ -15,13 +15,15 @@ const buildKeysString = [
   "chain",
   "chains-spec-file",
   "tag",
-  "org",
+  "github-organization",
+  "github-repo",
   "registry",
   "platform",
   "buildkit-address",
+  "git-ref",
 ] as const;
 
-const buildKeysBoolean = ["local", "buildkit"] as const;
+const buildKeysBoolean = ["local", "buildkit", "skip"] as const;
 
 type BuildOptionsString = {
   [K in (typeof buildKeysString)[number]]?: string;
@@ -54,8 +56,6 @@ export function getBuildOptions(): BuildOptions {
 
 const chainSpecKeys = [
   "repo-host",
-  "github-organization",
-  "github-repo",
   "dockerfile",
   "build-env",
   "pre-build",
@@ -105,12 +105,20 @@ function buildOptionsToArguments(opts: BuildOptions): string[] {
     args = [...args, "--local"];
   }
 
-  if (opts.org !== undefined) {
-    args = [...args, "--org", opts.org];
+  if (opts["github-organization"] !== undefined) {
+    args = [...args, "--org", opts["github-organization"]];
+  }
+
+  if (opts["github-repo"] !== undefined) {
+    args = [...args, "--repo", opts["github-repo"]];
   }
 
   if (opts.registry !== undefined) {
     args = [...args, "--registry", opts.registry];
+  }
+
+  if (opts["git-ref"] !== undefined) {
+    args = [...args, "--git-ref", opts["git-ref"]];
   }
 
   if (opts.tag !== undefined) {
@@ -119,6 +127,10 @@ function buildOptionsToArguments(opts: BuildOptions): string[] {
 
   if (opts.buildkit) {
     args = [...args, "--use-buildkit"];
+  }
+
+  if (opts.skip) {
+    args = [...args, "--skip"];
   }
 
   if (opts.platform !== undefined) {
@@ -197,15 +209,64 @@ export async function buildImage(
   }
 
   const args = buildOptionsToArguments(opts);
-  const buildOutput = await heighliner(args);
-  const outputLines = buildOutput.stdout.split("\n");
-  const matches = outputLines.flatMap((line) => {
-    const match = line.match(/Successfully (tagged|built) (\S+)/);
-    if (match === null) {
-      return [];
-    }
-    return [match];
+  const buildOutput = await heighliner(args, {
+    env: { BUILDKIT_PROGRESS: "plain" },
   });
+  const outputLines = buildOutput.stdout.split("\n");
+  const matches = [];
+
+  if (opts.buildkit) {
+    const stderrLines = buildOutput.stderr.split("\n");
+
+    for (const line of stderrLines) {
+      const manifestMatch = line.match(/exporting manifest (\S+:\S+)/);
+      if (manifestMatch != null) {
+        matches.push(manifestMatch);
+      }
+    }
+
+    for (const line of outputLines) {
+      const tagMatch = line.match(/resulting docker image tags: \+\[(.*)?\]/);
+      if (tagMatch != null) {
+        matches.push(tagMatch);
+      }
+    }
+  } else {
+    for (const line of outputLines) {
+      const match = line.match(/Successfully (tagged|built) (\S+)/);
+      if (match != null) matches.push(match);
+    }
+  }
+
+  if (opts.buildkit) {
+    if (matches.length < 2) {
+      const err = new Error(
+        `Couldn't find buildkit necessary info, matches: ${matches}`
+      );
+      core.setFailed(err);
+      throw err;
+    }
+    let imageid = "";
+    const tags = [];
+    for (const match of matches) {
+      if (match[0].startsWith("exporting manifest")) {
+        imageid = match[1];
+      } else if (match[0].startsWith("resulting docker image tags")) {
+        tags.push(...match[1].split(" "));
+      }
+    }
+
+    const digest = `${opts.registry}/${opts.chain}@${imageid}`;
+    return {
+      imageid,
+      tag: tags.length > 0 ? tags[0].split(":").pop() ?? "" : "",
+      digest,
+      metadata: JSON.stringify([
+        { Id: imageid, RepoDigests: [digest], RepoTags: tags },
+      ]),
+    };
+  }
+
   const imageIdMatch = matches.find((match) => match[1] === "built");
   if (imageIdMatch === undefined) {
     const err = new Error("Couldn't find imageid");
@@ -219,7 +280,6 @@ export async function buildImage(
     core.setFailed(err);
     throw err;
   }
-  const tag = tagMatch[2];
 
   const [parsedMetadata, metadata] = await getImageMetadata(shortId);
 
@@ -227,6 +287,6 @@ export async function buildImage(
     imageid: parsedMetadata.Id,
     digest: parsedMetadata.RepoDigests[0],
     metadata,
-    tag,
+    tag: tagMatch[2],
   };
 }

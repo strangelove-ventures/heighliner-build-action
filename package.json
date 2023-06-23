@@ -21,6 +21,7 @@
     "@actions/tool-cache": "^2.0.1",
     "@types/node": "^18.13.0",
     "rimraf": "^4.1.2",
+    "wait-port": "^1.0.4",
     "yaml": "^2.2.1"
   }
 }

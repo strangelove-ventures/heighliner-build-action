@@ -32,7 +32,7 @@ inputs:
 
   local:
     description: "Build image from local checked out repository (any non empty value is evaluated as true)"
-    default: "true"
+    default: "false"
     required: false
 
   tag:
@@ -46,31 +46,44 @@ inputs:
   registry:
     description: "Docker container registry for pushing images"
     required: false
+    default: ghcr.io/${{ github.repository_owner }}
 
   buildkit:
     description: "User docker buildkit for building images"
     required: false
-    default: "false"
+    default: "true"
+
+  buildkit-tag:
+    description: "Name of the buildkit tag to use from GitHub (defaults to latest)"
+    required: false
 
   buildkit-address:
     description: "Address of the buildkit socket, can be unix, tcp, ssl (default \"unix:///run/buildkit/buildkitd.sock\")"
     required: false
+    default: tcp://127.0.0.1:8125
 
   platform:
     description: "Comma separated list of platforms to build containers for"
     required: false
 
   repo-host:
-    description: "Providing this option will override the default chains.yaml with a custom chain spec."
+    description: "By default, this is 'github.com', but use this field to override. For example 'gitlab.com'."
     required: false
 
   github-organization:
-    description: "The organization name of the location of the chain binary. By default, this is 'github.com', but use this field to override. For example 'gitlab.com'. Providing this option will override the default chains.yaml with a custom chain spec."
+    description: "The github owner (user/organization) of the chain source code."
     required: false
+    default: ${{ github.repository_owner }}
 
   github-repo:
-    description: "The repo name of the location of the chain binary. Providing this option will override the default chains.yaml with a custom chain spec."
+    description: "The github repository name of the chain source code."
     required: false
+    default: ${{ github.event.repository.name }}
+
+  git-ref:
+    description: "Github short ref to build (branch, tag)"
+    required: false
+    default: ${{ github.ref_name }}
 
   dockerfile:
     description: "Which dockerfile strategy to use (folder names under dockerfile/). OPTIONS: cosmos, cargo, imported, or none. Use imported if you are importing an existing public docker image as a base for the heighliner image. Use none if you are not able to build the chain binary from source and need to download binaries into the image instead. Providing this option will override the default chains.yaml with a custom chain spec."
@@ -95,6 +108,11 @@ inputs:
   libraries:
     description: "Any extra libraries need to run the binary. In additon to the binary itself, these will be copied over to the final image. Providing this option will override the default chains.yaml with a custom chain spec."
     required: false
+  
+  skip:
+    description: "Skip pushing images to registry"
+    required: false
+    default: "false"
 
 outputs:
   imageid:
