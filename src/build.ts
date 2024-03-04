@@ -22,6 +22,7 @@ const buildKeysString = [
   "buildkit-address",
   "git-ref",
   "tar-export-path",
+  "additional-args",
 ] as const;
 
 const buildKeysBoolean = ["local", "buildkit", "skip"] as const;
@@ -145,6 +146,10 @@ function buildOptionsToArguments(opts: BuildOptions): string[] {
 
   if (opts["buildkit-address"] !== undefined) {
     args = [...args, "--buildkit-addr", opts["buildkit-address"]];
+  }
+
+  if (opts["additional-args"] !== undefined) {
+    args = [...args, ...opts["additional-args"].split(" ")];
   }
 
   return args;

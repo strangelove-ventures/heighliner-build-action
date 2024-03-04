@@ -118,6 +118,10 @@ inputs:
     required: false
     default: "false"
 
+  additional-args:
+    description: "Additional arguments to pass to heighliner build command"
+    required: false
+
 outputs:
   imageid:
     description: "The docker image ID of the built image"
