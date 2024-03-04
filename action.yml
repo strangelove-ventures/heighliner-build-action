@@ -53,6 +53,10 @@ inputs:
     required: false
     default: "true"
 
+  build-dir:
+    description: "Custom build directory, relative from root of repository"
+    required: false
+
   buildkit-tag:
     description: "Name of the buildkit tag to use from GitHub (defaults to latest)"
     required: false

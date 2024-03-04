@@ -63,6 +63,7 @@ const chainSpecKeys = [
   "build-target",
   "binaries",
   "libraries",
+  "build-dir",
 ] as const;
 
 type ChainSpecInput = {
