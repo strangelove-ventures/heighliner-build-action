@@ -37,7 +37,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: strangelove-ventures/heighliner-build-action@v0.0.3
+        uses: strangelove-ventures/heighliner-build-action@v1.0.0
         with:
           chain: noble
           dockerfile: cosmos
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build Docker image
-        uses: strangelove-ventures/heighliner-build-action@v0.0.3
+        uses: strangelove-ventures/heighliner-build-action@v1.0.0
         with:
           registry: # empty registry, image only shared for e2e testing
           tag: local # emulate local environment for consistency in interchaintest cases
