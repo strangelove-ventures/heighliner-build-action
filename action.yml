@@ -112,6 +112,10 @@ inputs:
   libraries:
     description: "Any extra libraries need to run the binary. In additon to the binary itself, these will be copied over to the final image. Providing this option will override the default chains.yaml with a custom chain spec."
     required: false
+
+  tar-export-path:
+    description: "File path to export built image as docker tarball. This should end with a .tar extention (ex: docker-image.tar)"
+    required: false
   
   skip:
     description: "Skip pushing images to registry"
