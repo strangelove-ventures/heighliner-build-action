@@ -140,5 +140,5 @@ outputs:
     description: "The tag applied to the built image"
 
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
