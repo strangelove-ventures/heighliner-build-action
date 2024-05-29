@@ -10,6 +10,7 @@
   "author": "Cole Brown <bigswim@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^20.12.13",
     "@vercel/ncc": "^0.36.1",
     "prettier": "^2.8.4",
     "typescript": "^4.9.5"
@@ -19,7 +20,6 @@
     "@actions/exec": "^1.1.1",
     "@actions/github": "^5.1.1",
     "@actions/tool-cache": "^2.0.1",
-    "@types/node": "^18.13.0",
     "rimraf": "^4.1.2",
     "wait-port": "^1.0.4",
     "yaml": "^2.2.1"
