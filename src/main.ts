@@ -34,11 +34,11 @@ async function run(): Promise<void> {
     "--allow-insecure-entitlement",
     "network.host",
     "--addr",
-    "tcp://127.0.0.1:8125"
+    "tcp://127.0.0.1:8125",
   ]);
 
   // wait for buildkit to be booted
-  await waitPort({host:'127.0.0.1', port:8125, timeout: 10000})
+  await waitPort({ host: "127.0.0.1", port: 8125, timeout: 10000 });
 
   const {
     imageid,
@@ -55,7 +55,7 @@ async function run(): Promise<void> {
   core.setOutput("metadata", metadata);
   core.setOutput("tag", outputTag);
 
-  process.exit(0)
+  process.exit(0);
 }
 
 run();

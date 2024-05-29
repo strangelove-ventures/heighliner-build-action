@@ -22,7 +22,7 @@ export type InstallOptions = GitRelease & {
 function findAsset<T extends { name: string }>(
   assets: T[],
   arch: string,
-  platform: string
+  platform: string,
 ): T | undefined {
   function match(input: string): boolean {
     switch (arch) {
@@ -34,7 +34,7 @@ function findAsset<T extends { name: string }>(
     }
     return (
       input.match(new RegExp(arch)) !== null &&
-      input.match(new RegExp(platform)) !== null && 
+      input.match(new RegExp(platform)) !== null &&
       input.endsWith(".tar.gz")
     );
   }
@@ -62,19 +62,14 @@ async function installRelease(
   url: string,
   version: string,
   arch: string,
-  subdir: string
+  subdir: string,
 ): Promise<string> {
   const downloadPath = await tc.downloadTool(url);
   const extractedFolder = await tc.extractTar(downloadPath);
   core.info(`Caching ${name} ${version} ${arch}`);
-  const cachedPath = await tc.cacheDir(
-    extractedFolder,
-    name,
-    version,
-    arch
-  );
-  
-  const binPath = path.join(cachedPath, subdir)
+  const cachedPath = await tc.cacheDir(extractedFolder, name, version, arch);
+
+  const binPath = path.join(cachedPath, subdir);
   core.addPath(binPath);
   return binPath;
 }
@@ -89,7 +84,7 @@ export async function installAndCache(opts: InstallOptions): Promise<string> {
   const cachedPath = tc.find(opts.name, tag, arch);
   if (cachedPath !== "") {
     core.info(`Found ${opts.name} ${tag} ${arch} in cache`);
-    const binPath = path.join(cachedPath, opts.tarSubDir)
+    const binPath = path.join(cachedPath, opts.tarSubDir);
     core.addPath(binPath);
     return binPath;
   }
@@ -103,5 +98,11 @@ export async function installAndCache(opts: InstallOptions): Promise<string> {
   }
 
   core.info(`Downloading asset ${asset.name}`);
-  return await installRelease(opts.name, asset.browser_download_url, tag, arch, opts.tarSubDir);
+  return await installRelease(
+    opts.name,
+    asset.browser_download_url,
+    tag,
+    arch,
+    opts.tarSubDir,
+  );
 }

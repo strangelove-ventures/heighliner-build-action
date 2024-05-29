@@ -6,7 +6,7 @@ import path from "path";
 
 export async function heighliner(
   args?: string[],
-  opts?: exec.ExecOptions
+  opts?: exec.ExecOptions,
 ): Promise<exec.ExecOutput> {
   return exec.getExecOutput("heighliner", args, opts);
 }
@@ -84,7 +84,7 @@ type YAMLReadyChainSpec = Omit<
 };
 
 function prepareChainSpecForYAMLSerialization(
-  spec: ChainSpec
+  spec: ChainSpec,
 ): YAMLReadyChainSpec {
   return {
     ...spec,
@@ -184,7 +184,7 @@ interface ImageMetadata {
 }
 
 async function getImageMetadata(
-  imageId: string
+  imageId: string,
 ): Promise<[ImageMetadata, string]> {
   const inspectOutput = await exec.getExecOutput("docker", [
     "inspect",
@@ -195,7 +195,7 @@ async function getImageMetadata(
 
   if (metadata.length < 1) {
     throw new Error(
-      "Expected docker metadata to include at least one result, got none."
+      "Expected docker metadata to include at least one result, got none.",
     );
   }
 
@@ -211,7 +211,7 @@ interface BuildOutput {
 
 export async function buildImage(
   opts: BuildOptions,
-  spec?: ChainSpec
+  spec?: ChainSpec,
 ): Promise<BuildOutput> {
   // If a custom chain config is provided, override chains.yaml
   if (spec !== undefined) {
@@ -257,7 +257,7 @@ export async function buildImage(
   if (opts.buildkit) {
     if (matches.length < 2) {
       const err = new Error(
-        `Couldn't find buildkit necessary info, matches: ${matches}`
+        `Couldn't find buildkit necessary info, matches: ${matches}`,
       );
       core.setFailed(err);
       throw err;
