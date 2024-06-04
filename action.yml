@@ -18,6 +18,10 @@ inputs:
     default: heighliner
     required: false
 
+  clone-key:
+    description: "base64 encoded ssh key used for authenticating a private repository"
+    required: false
+
   heighliner-tag:
     description: "Name of the heighliner tag to use from GitHub (defaults to latest)"
     required: false
@@ -110,11 +114,11 @@ inputs:
     required: false
 
   libraries:
-    description: "Any extra libraries need to run the binary. In additon to the binary itself, these will be copied over to the final image. Providing this option will override the default chains.yaml with a custom chain spec."
+    description: "Any extra libraries need to run the binary. In addition to the binary itself, these will be copied over to the final image. Providing this option will override the default chains.yaml with a custom chain spec."
     required: false
 
   tar-export-path:
-    description: "File path to export built image as docker tarball. This should end with a .tar extention (ex: docker-image.tar)"
+    description: "File path to export built image as docker tarball. This should end with a .tar extension (ex: docker-image.tar)"
     required: false
   
   skip:
