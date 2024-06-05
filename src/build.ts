@@ -18,6 +18,7 @@ const buildKeysString = [
   "github-organization",
   "github-repo",
   "registry",
+  "clone-key",
   "platform",
   "buildkit-address",
   "git-ref",
@@ -118,6 +119,10 @@ function buildOptionsToArguments(opts: BuildOptions): string[] {
 
   if (opts.registry !== undefined) {
     args = [...args, "--registry", opts.registry];
+  }
+
+  if (opts["clone-key"] !== undefined) {
+    args = [...args, "--clone-key", opts["clone-key"]];
   }
 
   if (opts["git-ref"] !== undefined) {
